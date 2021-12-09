@@ -1,0 +1,20 @@
+
+import { allocateString } from "runtime/dataStructures"
+
+import foreign wasm string_size: (WasmI64) -> WasmI32 from "lunatic::error"
+import foreign wasm to_string: (WasmI64, WasmI32) -> Void from "lunatic::error"
+import foreign wasm drop: (WasmI32) -> Void from "lunatic::error"
+
+
+enum ErrCode { Success, Fail }
+
+let get_error = (id) => {
+    let size = string_size(id)
+    let ptr = allocateString(size)
+    to_string(id, ptr + 8n)
+    drop(id)
+    WasmI32.toGrain(ptr) : String
+}
+
+export *
+
